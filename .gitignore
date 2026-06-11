@@ -1,5 +1,15 @@
+# Dataset
+dataset/
+
+# Models
+models/*.keras
+
+# Virtual environments
+plant_disease_project_env/
+
+# Secrets
+.env
+
+# Python cache
 __pycache__/
 .ipynb_checkpoints/
-.env
-*.pyc
-dataset/
