@@ -3,6 +3,7 @@ dataset/
 
 # Models
 models/*.keras
+models/*.h5
 
 # Virtual environments
 plant_disease_project_env/
@@ -13,3 +14,4 @@ plant_disease_project_env/
 # Python cache
 __pycache__/
 .ipynb_checkpoints/
+

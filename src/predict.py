@@ -1,7 +1,8 @@
 import numpy as np
 import tensorflow as tf
-
 from pathlib import Path
+from src.logger import log_event
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -65,5 +66,13 @@ def predict_disease(image):
     idx = np.argmax(prediction)
 
     confidence = float(np.max(prediction))*100
+
+    log_event(
+        "DISEASE DETECTED",
+        {
+            "disease": CLASS_NAMES[idx],
+            "confidence": confidence
+        }
+    )
 
     return CLASS_NAMES[idx], confidence
