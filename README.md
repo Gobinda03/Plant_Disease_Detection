@@ -1,44 +1,31 @@
 # 🌿 AgriDoctor AI
 
-AI-Powered Plant Disease Detection and Community Disease Intelligence Platform
+AI-powered Plant Disease Detection and Community Alert System built with Streamlit, TensorFlow, Supabase, and Generative AI.
 
 ---
 
-## 📌 Overview
+## 📖 Overview
 
-AgriDoctor AI is an intelligent plant disease detection platform that helps farmers identify crop diseases using deep learning and receive AI-generated treatment recommendations.
+AgriDoctor AI is an intelligent agricultural assistance platform that helps farmers and gardeners identify plant diseases from leaf images, receive treatment recommendations, generate AI-powered reports, and stay informed about disease outbreaks occurring nearby.
 
-The system combines Computer Vision, Artificial Intelligence, Location Intelligence, and Community Disease Monitoring to create an early-warning ecosystem for agricultural disease outbreaks.
-
----
-
-## 🚜 Problem Statement
-
-Crop diseases cause significant agricultural losses worldwide. Farmers often struggle to:
-
-* Identify diseases accurately
-* Take preventive action quickly
-* Access expert agricultural guidance
-* Know about disease outbreaks in nearby areas
-
-AgriDoctor AI addresses these challenges through automated disease detection and community-based disease intelligence.
+The platform combines Computer Vision, Generative AI, Geolocation Services, and Community Intelligence to create a smarter and more proactive plant health monitoring system.
 
 ---
 
-## ✨ Features
+## 🚀 Key Features
 
-### 🔍 Plant Disease Detection
+### 🌱 Plant Disease Detection
 
-* Upload a leaf image
-* Deep Learning model predicts disease
-* Confidence score displayed
-* Supports multiple crop diseases
+* Upload a plant leaf image
+* Detect plant diseases using a trained deep learning model
+* View prediction confidence scores
+* Support for multiple plant disease classes
 
 ---
 
 ### 📚 Disease Knowledge Base
 
-Provides:
+For every detected disease:
 
 * Disease description
 * Symptoms
@@ -49,91 +36,124 @@ Provides:
 
 ### 🤖 AI Generated Reports
 
-Automatically generates:
+Generate detailed disease reports using Generative AI.
+
+Reports include:
 
 * Disease analysis
 * Severity assessment
-* Recommended actions
-* Prevention strategies
+* Treatment recommendations
+* Prevention guidelines
+
+All reports are automatically stored for future reference.
 
 ---
 
-### 👤 User Authentication
+### 📍 Location-Aware User Profiles
+
+During registration:
+
+* Automatic location detection
+* State and district extraction
+* Manual location correction option
+* Location stored securely in Supabase
+
+Stored profile information:
+
+* Email
+* State
+* District
+* Latitude
+* Longitude
+
+---
+
+### 🚨 Community Disease Alerts
+
+AgriDoctor AI continuously analyzes disease reports submitted by users.
+
+When disease cases exceed predefined thresholds in a district:
+
+| Alert Level | Cases |
+| ----------- | ----- |
+| Warning     | 5+    |
+| High Risk   | 15+   |
+| Outbreak    | 30+   |
+
+Users receive real-time outbreak notifications for their region.
+
+---
+
+### 📜 Prediction History
+
+Users can view:
+
+* Previously detected diseases
+* Confidence scores
+* AI generated reports
+* Report timestamps
+
+---
+
+### 🔐 Authentication System
 
 Powered by Supabase Authentication.
 
 Features:
 
 * User Registration
-* Secure Login
-* User Session Management
-* Logout Functionality
+* User Login
+* Session Management
+* Secure Authentication
 
 ---
 
-### 📍 Location-Aware Profiles
+### 📊 Logging System
 
-During registration:
+Every major action is logged:
 
-* User location is detected automatically
-* State and district are stored
-* Location data is linked to disease reports
+* Sign Up
+* Login
+* Disease Detection
+* Report Generation
+* Profile Creation
+* Community Alerts
 
----
-
-### 📜 Prediction History
-
-Users can:
-
-* View previous disease reports
-* Access AI-generated recommendations
-* Track past predictions
-
----
-
-### 📊 Community Dashboard
-
-Visualizes:
-
-* Most common diseases
-* Disease frequency
-* Community-level disease trends
-
----
-
-### 🚨 Community Disease Alerts
-
-The system monitors disease reports from nearby users.
-
-When a disease exceeds a threshold count:
-
-* Community alert is generated
-* Nearby farmers are notified
-* Early preventive action becomes possible
+Useful for debugging and monitoring.
 
 ---
 
 ## 🏗️ System Architecture
 
 ```text
-Leaf Image
-    │
-    ▼
-Deep Learning Model
-    │
-    ▼
-Disease Prediction
-    │
-    ├── Knowledge Base
-    │
-    ├── AI Report Generator
-    │
-    ├── Save Report (Supabase)
-    │
-    └── Community Alert Engine
-            │
-            ▼
-    Location-Based Alerts
+User
+ │
+ ▼
+Streamlit Frontend
+ │
+ ├── Authentication
+ │       │
+ │       ▼
+ │   Supabase Auth
+ │
+ ├── Location Detection
+ │       │
+ │       ▼
+ │   User Profiles
+ │
+ ├── Disease Detection
+ │       │
+ │       ▼
+ │   TensorFlow Model
+ │
+ ├── Knowledge Base
+ │
+ ├── AI Report Generator
+ │
+ └── Community Alert Engine
+         │
+         ▼
+      Supabase Database
 ```
 
 ---
@@ -156,59 +176,40 @@ Disease Prediction
 
 * Supabase Auth
 
-### AI/ML
+### Machine Learning
 
 * TensorFlow
 * Keras
-* CNN Model
 
-### Data Processing
+### AI Reports
 
-* NumPy
-* Pandas
-
-### Visualization
-
-* Plotly
-
-### Image Processing
-
-* Pillow (PIL)
+* Google Gemini API
 
 ### Geolocation
 
-* Streamlit Geolocation
-* Reverse Geocoding APIs
+* streamlit-geolocation
+* Reverse Geocoding API
+
+### Image Processing
+
+* Pillow
+* NumPy
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-PLANT_DISEASE_DETECTION PROJECT/
-
-├── .devcontainer/
-
-├── dataset/
-│   ├── test/
-│   ├── train/
-│   ├── valid/
-│   └── disease_knowledge.json
-
-├── docs/
-│   └── classification_report.csv
-
+Plant_Disease_Detection/
+│
 ├── models/
-│   ├── trained_plant_disease_model.keras
 │   └── training_history.json
-
+│
 ├── notebooks/
 │   ├── 01_data_exploration.ipynb
 │   ├── 02_model_training.ipynb
 │   └── 03_model_evaluation.ipynb
-
-├── plant_disease_project_env/
-
+│
 ├── src/
 │   ├── alerts.py
 │   ├── auth.py
@@ -222,40 +223,92 @@ PLANT_DISEASE_DETECTION PROJECT/
 │   ├── logger.py
 │   ├── predict.py
 │   ├── profile.py
-│   ├── reports.py
-│   └── __init__.py
-
-├── tests/
-
+│   └── reports.py
+│
 ├── webapp/
-│   ├── __pycache__/
+│   ├── app.py
 │   │
 │   ├── components/
-│   │   ├── __init__.py
-│   │   ├── alerts.py
+│   │   ├── auth_guard.py
 │   │   ├── header.py
 │   │   └── sidebar.py
 │   │
-│   ├── views/
-│   │   ├── __init__.py
-│   │   ├── auth_page.py
-│   │   ├── dashboard_page.py
-│   │   ├── detection_page.py
-│   │   └── history_page.py
-│   │
-│   ├── __init__.py
-│   └── app.py
-
+│   └── views/
+│       ├── auth_page.py
+│       ├── dashboard_page.py
+│       ├── detection_page.py
+│       └── history_page.py
+│
 ├── .env
 ├── .gitignore
-├── README.md
 ├── requirements.txt
-└── runtime.txt
+├── runtime.txt
+└── README.md
 ```
 
 ---
 
-## 🗄️ Database Schema
+## ⚙️ Installation
+
+### Clone Repository
+
+```bash
+git clone https://github.com/Gobinda03/Plant_Disease_Detection.git
+
+cd Plant_Disease_Detection
+```
+
+### Create Virtual Environment
+
+```bash
+python -m venv plant_disease_project_env
+```
+
+### Activate Environment
+
+Windows:
+
+```bash
+plant_disease_project_env\Scripts\activate
+```
+
+Linux/Mac:
+
+```bash
+source plant_disease_project_env/bin/activate
+```
+
+### Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 🔑 Environment Variables
+
+Create a `.env` file:
+
+```env
+SUPABASE_URL=YOUR_SUPABASE_URL
+
+SUPABASE_KEY=YOUR_SUPABASE_ANON_KEY
+
+GROQ_API_KEY=YOUR_GROQ_API_KEY
+```
+
+---
+
+## ▶️ Run Application
+
+```bash
+streamlit run webapp/app.py
+```
+
+---
+
+## 🗄️ Database Tables
 
 ### user_profiles
 
@@ -280,7 +333,7 @@ create table disease_reports (
     id bigint generated always as identity primary key,
     user_id uuid references auth.users(id),
     disease_name text,
-    confidence float,
+    confidence numeric,
     report text,
     state text,
     district text,
@@ -292,144 +345,50 @@ create table disease_reports (
 
 ---
 
-## ⚙️ Installation
+## 🚨 Community Alert Logic
 
-### Clone Repository
+Alerts are generated using reports submitted during the last 7 days.
 
-```bash
-git clone https://github.com/Gobinda03/Plant_Disease_Detection
-cd Plant_Disease_Detection
+```text
+5+ reports     → Warning
+
+15+ reports    → High Risk
+
+30+ reports    → Outbreak
 ```
 
-### Create Virtual Environment
-
-```bash
-python -m venv plant_disease_project_env
-```
-
-### Activate Environment
-
-Windows:
-
-```bash
-plant_disease_project_env\Scripts\activate
-```
-
-### Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
+Alerts are displayed only for the user's district.
 
 ---
 
-## 🔑 Environment Variables
+## 🔮 Future Enhancements
 
-Create a `.env` file:
-
-```env
-SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_anon_key
-GROK_API_KEY=your_grok_api_key
-```
-
----
-
-## ▶️ Run Application
-
-```bash
-streamlit run webapp/app.py
-```
+* Radius-based outbreak detection
+* Push notifications
+* Email alerts
+* Multilingual support
+* Farmer discussion forum
+* Mobile application
+* Crop recommendation engine
+* Weather integration
+* Disease trend analytics
+* Interactive outbreak map
 
 ---
 
-## 📈 Current Progress
+## 👨‍💻 Author
 
+Gobinda Hazra
 
-* Plant Disease Detection
-* Disease Information System
-* AI Report Generation
-* Supabase Integration
-* Prediction History
-* Dashboard Analytics
-* Community Alert Framework
-* User Authentication
-* User Profiles
-* Auto Location Detection
-* Location-Aware Disease Reports
+B.Tech Information Technology
 
----
+Narula Institute of Technology
 
-## 🚀 Future Enhancements
-
-### 🔥 Planned Features
-
-#### Multilingual Support
-
-Support for:
-
-* English
-* Hindi
-* Bengali
-* Tamil
-* Telugu
-
----
-
-#### Advanced Disease Alerts
-
-* District-wise alerts
-* State-wise disease heatmaps
-* Real-time outbreak monitoring
-
----
-
-#### Model Improvements
-
-* Higher accuracy CNN
-* Transfer Learning
-* EfficientNet
-* MobileNetV3
-
----
-
-#### Mobile Application
-
-* Flutter Frontend
-* Android Deployment
-* Offline Predictions
-
----
-
-#### Farmer Community Network
-
-* Disease reporting
-* Discussion forums
-* Agricultural expert support
-
----
-
-## 📊 Expected Impact
-
-AgriDoctor AI aims to:
-
-* Reduce crop losses
-* Improve disease awareness
-* Enable early disease intervention
-* Provide accessible AI-powered agricultural assistance
-
----
-
-## 👨‍💻 Developer
-
-**Gobinda Hazra**
-
-Software Engineering Student
-
-Passionate about AI, Machine Learning, Agriculture Technology, and Full-Stack Development.
+GitHub:
+https://github.com/Gobinda03
 
 ---
 
 ## 📄 License
 
-This project is developed for educational and research purposes.
+This project is intended for educational, research, and portfolio purposes.
