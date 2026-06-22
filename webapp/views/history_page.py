@@ -27,13 +27,19 @@ def show_history_page():
         timestamp = row.get("created_at")
 
         if timestamp:
-            formatted_time = (
-                datetime
-                .fromisoformat(
-                    timestamp.replace("Z", "+00:00")
-                )
-                .strftime("%d %b %Y | %I:%M %p")
+            from zoneinfo import ZoneInfo
+
+            utc_time = datetime.fromisoformat(
+                timestamp.replace("Z", "+00:00")
             )
+
+            ist_time = utc_time.astimezone(
+                ZoneInfo("Asia/Kolkata")
+            )
+
+            formatted_time = ist_time.strftime(
+                "%d %b %Y | %I:%M %p"
+)
 
             st.caption(
                 f"📅 Generated on {formatted_time}"

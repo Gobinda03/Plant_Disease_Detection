@@ -4,9 +4,12 @@ from streamlit_geolocation import streamlit_geolocation
 from src.auth import sign_up, sign_in
 from src.profile import create_profile
 from src.geocoding import get_address
+from src.location_data import INDIA_LOCATIONS
 
+from src.logger import log_event
 
 def show_auth_page():
+
 
     col1, col2, col3 = st.columns([1, 2, 1])
 
@@ -21,8 +24,7 @@ def show_auth_page():
             ["Login", "Register"]
         )
 
-
-        # ---------- LOGIN ---------- 
+        # ---------- LOGIN ----------
 
         with tab1:
 
@@ -41,10 +43,17 @@ def show_auth_page():
 
             if st.button(
                 "Login",
-                use_container_width=True
+                width="stretch"
             ):
 
                 try:
+
+                    log_event(
+                        "LOGIN ATTEMPT",
+                        {
+                            "email": email
+                        }
+                    )
 
                     sign_in(
                         email,
@@ -54,15 +63,26 @@ def show_auth_page():
                     st.success(
                         "Login successful"
                     )
+                    log_event(
+                        "LOGIN SUCCESS",
+                        {
+                            "email": email
+                        }
+                    )
 
                     st.rerun()
 
                 except Exception as e:
-
+                    log_event(
+                        "LOGIN FAILED",
+                        {
+                            "email": email,
+                            "error": str(e)
+                        }
+                    )
                     st.error(str(e))
 
-        
-        # ---------- REGISTER ---------- 
+        # ---------- REGISTER ----------
 
         with tab2:
 
@@ -89,17 +109,95 @@ def show_auth_page():
 
             location = streamlit_geolocation()
 
-            location_ready = (
-                location
-                and location.get("latitude")
-                is not None
-            )
+            latitude = None
+            longitude = None
 
-            if location_ready:
+            selected_state = None
+            selected_district = None
+
+            if (
+                location
+                and location.get("latitude") is not None
+            ):
+
+                latitude = location["latitude"]
+                longitude = location["longitude"]
+
+                address = get_address(
+                    latitude,
+                    longitude
+                )
+
+                detected_state = address.get(
+                    "state",
+                    "Unknown"
+                )
+
+                detected_district = address.get(
+                    "district",
+                    "Unknown"
+                )
 
                 st.success(
-                    "Location captured successfully"
+                    "Location Detected"
                 )
+                log_event(
+                    "LOCATION DETECTED",
+                    {
+                        "district": detected_district,
+                        "state": detected_state,
+                        "latitude": latitude,
+                        "longitude": longitude
+                    }
+                )
+
+                st.info(
+                    f"""
+                    📍 District: {detected_district}
+                    📍 State: {detected_state}
+                    """
+                )
+
+
+                location_correct = st.checkbox(
+                    "Location is correct",
+                    value=True
+                )
+
+                if not location_correct:
+
+                    st.warning(
+                        "Please choose your correct location."
+                    )
+
+                    states = list(
+                        INDIA_LOCATIONS.keys()
+                    )
+
+                    selected_state = st.selectbox(
+                        "State",
+                        states
+                    )
+
+                    selected_district = st.selectbox(
+                        "District",
+                        INDIA_LOCATIONS[
+                            selected_state
+                        ]
+                    )
+
+                    log_event(
+                        "LOCATION ENTERED",
+                        {
+                            "district": selected_district,
+                            "state": selected_state
+                        }
+                    )
+
+                else:
+
+                    selected_state = detected_state
+                    selected_district = detected_district
 
             else:
 
@@ -109,42 +207,35 @@ def show_auth_page():
 
             if st.button(
                 "Create Account",
-                use_container_width=True
+                width="stretch"
             ):
 
                 try:
 
-                    if not location_ready:
+                    if latitude is None:
 
                         st.error(
                             "Location permission is required."
                         )
 
                     else:
+                        log_event(
+                            "SIGNUP ATTEMPT",
+                            {
+                                "email": email
+                            }
+                        )
 
                         response = sign_up(
                             email,
                             password
                         )
 
-                        latitude = location[
-                            "latitude"
-                        ]
-
-                        longitude = location[
-                            "longitude"
-                        ]
-
-                        address = get_address(
-                            latitude,
-                            longitude
-                        )
-
                         create_profile(
                             user_id=response.user.id,
                             email=email,
-                            state=address["state"],
-                            district=address["district"],
+                            state=selected_state,
+                            district=selected_district,
                             latitude=latitude,
                             longitude=longitude
                         )
@@ -152,11 +243,34 @@ def show_auth_page():
                         st.success(
                             "Account created successfully!"
                         )
+                        log_event(
+                            "PROFILE CREATED",
+                            {
+                                "email": email,
+                                "district": selected_district,
+                                "state": selected_state
+                            }
+                        )
+
+                        log_event(
+                            "SIGNUP SUCCESS",
+                            {
+                                "email": email,
+                                "user_id": response.user.id
+                            }
+                        )
 
                         st.info(
                             "You can now log in."
                         )
 
                 except Exception as e:
-
+                    log_event(
+                        "SIGNUP FAILED",
+                        {
+                            "email": email,
+                            "error": str(e)
+                        }
+                    )
                     st.error(str(e))
+

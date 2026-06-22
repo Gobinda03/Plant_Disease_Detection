@@ -12,14 +12,41 @@ def render_header():
 
     for alert in alerts:
 
-        st.warning(
-            f"""
-🚨 Community Disease Alert
+        if alert["level"] == "WARNING":
 
-Disease: {alert['disease']}
+            st.info(
+                f"""
+                🟡 Warning
 
-Location: {alert['district']}
+                {alert['disease']}
 
-Detected {alert['count']} times recently.
-"""
-        )
+                Detected {alert['count']} times in
+                {alert['district']}
+                """
+            )
+
+        elif alert["level"] == "HIGH RISK":
+
+            st.warning(
+                f"""
+                🟠 High Risk
+
+                {alert['disease']}
+
+                Detected {alert['count']} times in
+                {alert['district']}
+                """
+            )
+
+        elif alert["level"] == "OUTBREAK":
+
+            st.error(
+                f"""
+                🔴 Outbreak Alert
+
+                {alert['disease']}
+
+                Detected {alert['count']} times in
+                {alert['district']}
+                """
+            )
