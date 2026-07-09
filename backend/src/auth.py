@@ -1,22 +1,26 @@
 import os
 from pathlib import Path
 
-from supabase import create_client
+import streamlit as st
 from dotenv import load_dotenv
+from supabase import create_client
 
 from backend.src.logger import log_event
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 load_dotenv(ROOT_DIR / ".env")
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+try:
+    SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+except Exception:
+    SUPABASE_URL = os.getenv("SUPABASE_URL")
+    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 supabase = create_client(
     SUPABASE_URL,
-    SUPABASE_KEY
+    SUPABASE_KEY,
 )
-
 
 #---------- Sign Up ----------
 
