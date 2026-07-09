@@ -189,4 +189,4 @@ GitHub: https://github.com/Gobinda03
 --- 
 
 ## 📄 License 
-This project is intended for educational, research, and portfolio purposes. modify this correctl
+This project is intended for educational, research, and portfolio purposes.
