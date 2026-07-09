@@ -3,11 +3,6 @@ from backend.src.alerts import get_disease_alerts
 
 
 def render_header():
-
-    st.title(
-        "🌿 AgriDoctor AI"
-    )
-
     alerts = get_disease_alerts()
 
     for alert in alerts:

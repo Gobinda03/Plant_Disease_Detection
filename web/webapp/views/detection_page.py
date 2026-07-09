@@ -3,6 +3,9 @@ from PIL import Image
 import tempfile
 
 from backend.src.predict import predict_disease
+# import inspect
+
+# st.write(inspect.getfile(predict_disease))
 from backend.src.knowledge_base import get_disease_info
 from backend.src.reports import save_report
 
@@ -18,7 +21,7 @@ def show_detection_page():
     
     # ---------- Hero Section ---------- 
 
-    st.title("🌿 Plant Disease Detection")
+    st.title("🌿 KrishiNetra")
 
     st.markdown("""
     ### Detect Plant Diseases Instantly
@@ -66,7 +69,7 @@ def show_detection_page():
     if uploaded_file is None:
         return
 
-    image = Image.open(uploaded_file)
+    image = Image.open(uploaded_file).convert("RGB")
 
     col1, col2 = st.columns([1, 1])
 
@@ -91,9 +94,15 @@ def show_detection_page():
 
         image.save(tmp.name)
 
-        disease_name, confidence = predict_disease(
-            tmp.name
-        )
+        result = predict_disease(tmp.name)
+        # st.write(type(result))
+        # st.write(result)
+        if not result["success"]:
+            st.error(result["message"])
+            return
+
+        disease_name = result["disease"]
+        confidence = result["confidence"]
 
     with col2:
 
