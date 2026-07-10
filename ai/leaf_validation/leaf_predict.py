@@ -37,7 +37,7 @@ def is_leaf(image_path):
     print("====================================\n")
 
     # Require HIGH confidence
-    if leaf_prob >= 0.95:
+    if leaf_prob >= 0.6:
         return True, leaf_prob * 100
 
     return False, not_leaf_prob * 100
