@@ -1,28 +1,35 @@
 from pathlib import Path
-
+import json
 import tensorflow as tf
-from tensorflow.keras import layers, models
+from tensorflow.keras import layers
 
 # ==========================================================
-# Dataset Path
+# Paths
 # ==========================================================
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parents[1]
 
-DATASET_DIR = BASE_DIR
+DATASET_DIR = BASE_DIR / "leaf_dataset"
 
-IMG_SIZE = (128, 128)
+MODEL_DIR = BASE_DIR / "models"
+MODEL_DIR.mkdir(exist_ok=True)
+
+MODEL_PATH = MODEL_DIR / "leaf_validator.keras"
+CLASS_PATH = MODEL_DIR / "leaf_classes.json"
+
+IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
+SEED = 42
 
 # ==========================================================
-# Load Dataset
+# Dataset
 # ==========================================================
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
     DATASET_DIR,
     validation_split=0.2,
     subset="training",
-    seed=42,
+    seed=SEED,
     image_size=IMG_SIZE,
     batch_size=BATCH_SIZE,
 )
@@ -31,25 +38,26 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
     DATASET_DIR,
     validation_split=0.2,
     subset="validation",
-    seed=42,
+    seed=SEED,
     image_size=IMG_SIZE,
     batch_size=BATCH_SIZE,
 )
 
 print("\nClasses:", train_ds.class_names)
 
+with open(CLASS_PATH, "w") as f:
+    json.dump(train_ds.class_names, f)
+
 AUTOTUNE = tf.data.AUTOTUNE
 
 train_ds = (
     train_ds
-    .cache()
     .shuffle(1000)
     .prefetch(AUTOTUNE)
 )
 
 val_ds = (
     val_ds
-    .cache()
     .prefetch(AUTOTUNE)
 )
 
@@ -68,7 +76,7 @@ data_augmentation = tf.keras.Sequential([
 # ==========================================================
 
 base_model = tf.keras.applications.MobileNetV2(
-    input_shape=(128, 128, 3),
+    input_shape=(224, 224, 3),
     include_top=False,
     weights="imagenet",
 )
@@ -79,7 +87,7 @@ base_model.trainable = False
 # Model
 # ==========================================================
 
-inputs = tf.keras.Input(shape=(128, 128, 3))
+inputs = tf.keras.Input(shape=(224, 224, 3))
 
 x = data_augmentation(inputs)
 
@@ -89,7 +97,7 @@ x = base_model(x, training=False)
 
 x = layers.GlobalAveragePooling2D()(x)
 
-x = layers.Dropout(0.2)(x)
+x = layers.Dropout(0.3)(x)
 
 outputs = layers.Dense(1, activation="sigmoid")(x)
 
@@ -100,7 +108,7 @@ model = tf.keras.Model(inputs, outputs)
 # ==========================================================
 
 model.compile(
-    optimizer="adam",
+    optimizer=tf.keras.optimizers.Adam(1e-4),
     loss="binary_crossentropy",
     metrics=["accuracy"],
 )
@@ -108,14 +116,25 @@ model.compile(
 model.summary()
 
 # ==========================================================
-# Early Stopping
+# Callbacks
 # ==========================================================
 
-early_stop = tf.keras.callbacks.EarlyStopping(
-    monitor="val_loss",
-    patience=2,
-    restore_best_weights=True,
-)
+callbacks = [
+
+    tf.keras.callbacks.EarlyStopping(
+        monitor="val_loss",
+        patience=3,
+        restore_best_weights=True,
+    ),
+
+    tf.keras.callbacks.ModelCheckpoint(
+        MODEL_PATH,
+        monitor="val_accuracy",
+        save_best_only=True,
+        mode="max",
+        verbose=1,
+    ),
+]
 
 # ==========================================================
 # Train
@@ -124,18 +143,10 @@ early_stop = tf.keras.callbacks.EarlyStopping(
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=5,
-    callbacks=[early_stop],
+    epochs=10,
+    callbacks=callbacks,
 )
 
-# ==========================================================
-# Save Model
-# ==========================================================
-
-MODEL_DIR = BASE_DIR.parent / "models"
-
-MODEL_DIR.mkdir(exist_ok=True)
-
-model.save(MODEL_DIR / "leaf_validator.keras")
-
-print("\nLeaf validator saved successfully!")
+print("\nTraining Complete.")
+print("Model saved at:", MODEL_PATH)
+print("Classes saved at:", CLASS_PATH)

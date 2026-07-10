@@ -9,7 +9,7 @@ MODEL_PATH = BASE_DIR / "models" / "leaf_validator.keras"
 
 leaf_model = tf.keras.models.load_model(MODEL_PATH)
 
-IMG_SIZE = (128, 128)
+IMG_SIZE = (224, 224)
 
 
 def is_leaf(image_path):
@@ -37,7 +37,7 @@ def is_leaf(image_path):
     print("====================================\n")
 
     # Require HIGH confidence
-    if leaf_prob >= 0.6:
+    if leaf_prob >= 0.75:
         return True, leaf_prob * 100
 
     return False, not_leaf_prob * 100
